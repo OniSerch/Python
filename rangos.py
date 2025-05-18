@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Cargar el archivo CSV
-df = pd.read_csv("12052025_resultado_dim8.csv")
+df = pd.read_csv("Archivo el cual esta delimitado y pesa varios gb.csv")
 
 # Función para clasificar según "Dias de Mora"
 def clasificar(mora):
