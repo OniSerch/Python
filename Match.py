@@ -47,8 +47,8 @@ def unir_dim8_por_info1(archivo_detalle, archivo_base):
 
 # Función principal
 def main():
-    archivo_principal = "Detalle_Gestiones.csv"
-    archivo_secundario = "CasosAltos.csv"    
+    archivo_principal = "ArchivoComparativo.csv"
+    archivo_secundario = "Archivo Base.csv"    
 
     # Leer y guardar archivo columnado
     df1 = ver_csv(archivo_principal)
