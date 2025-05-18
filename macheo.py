@@ -14,13 +14,13 @@ def cargar_y_limpia_rut(con, archivo, tabla):
             regexp_replace(CAST(RUT AS VARCHAR), '-.*$', '') AS RUT_LIMPIO
         FROM read_csv_auto('{archivo}', delim='|', header=True)
     """)
-    print(f"✅ Cargado y limpiado: {archivo} → tabla '{tabla}'")
+    print(f"Cargado y limpiado: {archivo} → tabla '{tabla}'")
 
 
 def main():
-    archivo_detalle = "Detalle_Gestiones.csv"
-    archivo_base = "CasosAltos.csv"
-    archivo_salida = "CasosGestionesMAYO.csv"
+    archivo_detalle = "Archivo Comparativo.csv"
+    archivo_base = "Archivo que se hace cruce.csv"
+    archivo_salida = "Resultado.csv"
 
     con = duckdb.connect()
 
@@ -47,8 +47,8 @@ def main():
     df_resultado = pl.read_parquet(archivo_temp_parquet)
     df_resultado.write_csv(archivo_salida, separator="|")
 
-    print(f"✅ Archivo final guardado: {archivo_salida}")
-    print("👀 Vista previa:")
+    print(f"Archivo final guardado: {archivo_salida}")
+    print("Vista previa:")
     print(df_resultado.head(10))
 
 
