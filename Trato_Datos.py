@@ -24,13 +24,11 @@ def unir_dim8_por_info1(archivo_detalle, archivo_base):
     detalle_df = pl.read_csv(archivo_detalle, separator="|", has_header=True)
     base_df = pl.read_csv(archivo_base, separator="|", has_header=True)
 
-    # Verificamos columnas requeridas
     if "info_1" not in detalle_df.columns or "Dias de Mora" not in detalle_df.columns:
         raise ValueError("El archivo de detalle debe contener las columnas 'info_1' y 'Dias de Mora'")
     
     if "info_1" not in base_df.columns:
         raise ValueError("El archivo base debe contener la columna 'info_1'")
-
     # Join: base_df LEFT JOIN detalle_df para conservar todos los registros del archivo base
     resultado = base_df.join(detalle_df.select(["info_1", "Dias de Mora"]), on="info_1", how="left")
 
@@ -41,8 +39,8 @@ def unir_dim8_por_info1(archivo_detalle, archivo_base):
 
 # Función principal
 def main():
-    archivo_principal = "Detalle_de_Clientes_14-mayo-2025_8a6eca0d-3b90-45cb-a433-0fa30fa3075b.csv"
-    archivo_secundario = "colektia_20250513.csv"
+    archivo_principal = "Archivo Comparativo.csv"
+    archivo_secundario = "Archivo Base.csv"
 
     # Leer y guardar archivo columnado
     df1 = ver_csv(archivo_principal)
