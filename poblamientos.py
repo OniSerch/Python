@@ -1,3 +1,4 @@
+#Programa con polars para el procesamiento de un csv para varias carteras y gestiones especificas y subir al s3 de aws
 import pandas as pd
 import os
 from datetime import datetime
@@ -10,9 +11,6 @@ import polars as pl
 def sanitize_filename(name):
     return re.sub(r'[\\/*?:"<>|,]', '_', name)
 
-
-
-
 # Aliases por compañía
 def get_alias(company):
     company = company.strip()
@@ -23,37 +21,25 @@ def get_alias(company):
 
     company_lower = company.lower()
 
-    if "santander" in company_lower:
-        return "san"
-    elif "caja los andes" in company_lower:
-        return "cla"
-    elif "la polar" in company_lower:
-        return "lp"
-    elif "colektia-falabella perú" in company_lower:
-        return "cfp"
-    elif "falabella peru" in company_lower:
-        return "fp"
-    elif "techreo" in company_lower:
-        return "tco"
-    elif "openbank" in company_lower:
-        return "ODS"
+    if "company 1" in company_lower:
+        return "alias"
+    elif "company 2" in company_lower:
+        return "alias"
+        -
+        -
+        -
     else:
         # Si no hay alias conocido, limpiar espacios
         return company.replace(" ", "").lower()
 
 # Procesamiento principal
 def procesar_csv(filepath, tipo, salida):
-    # Leer CSV como LazyFrame
+    # Leer CSV como LazyFrame para mayor velocidad 
     lazy_df = pl.read_csv(filepath).lazy()
-
-    # Renombrar columnas quitando espacios
     schema = lazy_df.collect_schema()
     lazy_df = lazy_df.rename({col: col.strip() for col in schema})
-
     # Filtro base: Status == Done
     lazy_df = lazy_df.filter(pl.col("Status") == "Done")
-
-    # Filtrar por tipo de request
     if tipo == "Poblamiento":
         lazy_df = lazy_df.filter(pl.col("Request_type") == "Poblamiento")
         sufijo = "_t_"
@@ -63,21 +49,16 @@ def procesar_csv(filepath, tipo, salida):
     else:
         messagebox.showerror("Error", "Tipo inválido.")
         return
-
     # Convertir LazyFrame a DataFrame real
     df = lazy_df.collect()
-
     # Filtrar por tipo de contacto (en minúsculas)
     df_email = df.filter(pl.col("Type").str.to_lowercase() == "email")
     df_phone = df.filter(pl.col("Type").str.to_lowercase() == "phone")
-
     # Obtener fecha actual
     fecha = datetime.today().strftime("%d%m")
-
     def exportar(df_contacto, tipo_contacto):
         # Obtener compañías únicas como lista de strings
         companias = df_contacto.get_column("Company").unique().to_list()
-
         for company in companias:
             alias = get_alias(company)
             if alias:
@@ -86,20 +67,13 @@ def procesar_csv(filepath, tipo, salida):
                 columna_contacto = "Email" if tipo_contacto == "email" else "telefono"
                 filename = sanitize_filename(f"{alias}{extension}{fecha}.xlsx")
                 ruta_final = os.path.join(salida, filename)
-
                 # Convertir a pandas para exportar a Excel
                 df_export = df_final.select(["Account", "Contact"]).to_pandas()
                 df_export.columns = ["Cuenta", columna_contacto]
                 df_export.to_excel(ruta_final, index=False)
-
     exportar(df_email, "email")
     exportar(df_phone, "phone")
-
-
-
-
-
-# --- INTERFAZ ---
+# --- ,metodos para la interfaz funcionamiento---
 def seleccionar_archivo():
     path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
     if path:
